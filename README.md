@@ -93,6 +93,7 @@ Una vez llenados los datos, se le da a conectar y llevará a la pantalla que se 
 
 # Node-Red
 
+## Instalación
 Antes de instalar Node-Red, se requiere `nodejs` y `npm`, los cuales se instalan con los siguientes comandos: 
 ```
 sudo apt update
@@ -109,7 +110,7 @@ Luego se debe instalar el panel de Node-Red con los siguientes comandos:
 node-red-stop
 npm install node-red-dashboard
 ```
-
+## Activación 
 Ahora es necesario poner en funcionamiento Node-Red en segundo plano y visualizar si se activó de forma correcta: 
 ```
 node-red &
@@ -126,6 +127,43 @@ Si el puerto no está en uso deberá de aparecer algo parecido a lo que se muest
 
 ![](./nodered2.png)
 
-Para ver el panel de Node-red, en el navegador de la computadora se debe acceder a `Nombre/IP_Host:1885`, en este caso se accedió con `192.168.1.9:1885`, lo cual nos lleva a la pantalla que se muestra en la imagen. 
+## Prueba de conexión de MQTT y Node-Red
+
+Para ver el panel de Node-red, en el navegador de la computadora se debe acceder a `Nombre-IP_Host:1885`, en este caso se accedió con `192.168.1.9:1885`, lo cual nos lleva a la pantalla que se muestra en la imagen. 
 
 ![](./nodered3.png)
+
+Para comprobar que Node-Red y MQTT están conectados de forma correcta, se utilizaron los siguientes nodos que se pueden encontrar en la parte izquierda del panel de Node-Red:
+- `mqtt in` que se encuentra en network.
+- `debug` que se encuentra en common. 
+- `chart` que se encuentra en dashboard. 
+
+Como se acaban de colocar, aparecerá un triángulo rojo encima de los nodos, lo que indica que no están configurados, como se muestra en la imagen. 
+
+![](./nodered4.png)
+
+Para configurarlos solamente es cuestión de dar doble click al nodo. La primer configuración será del nodo `mqtt in`, la configuración aparecerá como se muestra a continuación, la cual es muy parecida a la hecha en MQTTX, en server colocamos `mosquitto`, en topic colocamos `test` y en output colocamos `a String`, como se muestra en la imagen. 
+
+![](./nodered5.png)
+
+Después es necesario dar click en la imagen del lapiz que está en la parte derecha de server, lo cual lleva a la configuración del servidor MQTT al que se conectará. En name colocamos `mosquitto`, en server colocamos la dirección IP de la BeagleBone, en este caso es `192.168.1.9`, en port colocamos el puerto en el que se esté corriendo mosquitto, en este caso es el `1883` y en protocol seleccionamos `MQTT V3.1.1`, en la imagen se muestran los campos llenados con lo descrito anteriormente. 
+
+![](./nodered6.png)
+
+Se debe de presionar el botón `Update`, lo cual regresará a la ventana de la primera configuración y luego se debe de presionar `Done`, lo cual debe de quitar el triángulo rojo del nodo, en caso contrario, la configuración no se realizó de forma correcta. 
+
+El siguiente nodo a configurar es `chart`, el cual es muy sencillo, ya que no debemos cambiar ninguna de las configuraciones, solamente debemos de dar click en el lapiz que está a la derecha de Group, en la ventana a la que lleva presionar `Update` y luego `Done`, con esto se debe de quitar el triángulo rojo del nodo. 
+
+![](./nodered7.png)
+
+Luego de que todo esté configurado, la última parte es conectar los nodos, lo cual es muy sencillo, al acercar el ratón a los pequeños cuadrados que se encuentran a los lados de los nodos se iluminarán de color naranja, damos click y solamente es cuestión de arrastrar hasta el nodo al que se quiera conectar, para esta prueba, las conexiones quedaron como las que se muestran en la imagen. 
+
+![](./nodered8.png)
+
+La prueba final para saber si todo funciona correctamente es entrar a la dirección `192.168.1.9:1885/ui` donde nos deberá aparecer lo que se muestra en la imagen. 
+
+![](./nodered9.png)
+
+Y finalmente, desde MQTTX enviaremos varios números, si todo está bien, se deberían de graficar los valores conforme se envían, como se muestra en la imagen. 
+
+![](./nodered10.png)
