@@ -167,3 +167,46 @@ La prueba final para saber si todo funciona correctamente es entrar a la direcci
 Y finalmente, desde MQTTX enviaremos varios números, si todo está bien, se deberían de graficar los valores conforme se envían, como se muestra en la imagen. 
 
 ![](./nodered10.png)
+
+# ESP-32
+
+## Arduino IDE
+Para llevar a cabo la prgramación del ESP-32 se usará Arduino IDE, el cual se puede descargar desde la tienda de aplicaciones de Windows, Ubuntu o MacOS, o desde la página oficial https://www.arduino.cc/en/software.
+
+## Antes de programar el ESP-32 
+
+Para que Arduino IDE pueda compilar el programa y subir la información a la ESP-32, primero es necesario descargar el gestor de placas de la ESP-32, para eso se debe ir a `Herramientas -> Placa -> Gestor de tarjetas`, lo cual llevará a una ventana como la que se muestra en la imagen, donde solamente se debe buscar `ESP32` y el gestor a instalar es el creado por `Espressif Systems`.
+
+![](./esp1.png)
+
+En caso de que no aparezca el gestor mencionada, se deberá ingresar a `Archivo -> Preferencias`, lo cual llevará a una ventana como la que se muestra en la imagen, en el apartado de `Gestor de URLs Adicionales de Tarjetas` se deberá copiar el siguiente link https://dl.espressif.com/dl/package_esp32_index.json y oprimir Ok. Después es necesario volver a buscar en el gestor de tarjetas `ESP32`. 
+
+![](./esp2.png)
+
+El siguiente paso es instalar la librería `PubSubClient`, para ello debemos de ir a `Programa -> Incluir Librería -> Administrar Bibliotecas`, en donde debemos de buscar PubSubClient e instalar la creada por `Nick O'Leary`.
+
+![](./esp3.png)
+
+## Prueba de Node-Red, MQTT y ESP-32
+
+En el repositorio se encuentra el archivo `mqtt.ino`, en el cual se conecta al servidor MQTT que se encuentra en la BeagleBone y le envía el valor leído por el ADC del pin 34 de la ESP-32 cada 5 segundos. Para esta prueba se usó la versión del ESP-32 que se muestra en la imagen.
+
+![](./esp32pinout.png)
+
+En el código, las partes importantes a modificar son dos, la primera corresponde al nombre y contraseña de la red inalámbrica que se va a conectar la placa, lo cual se debe de colocar en `ssid` y `password`. La segunda parte a modificar son del servidor MQTT, en `mqttBrocker` se debe colocar la dirección IP de la BeagleBone (192.168.1.9 en este caso), en `topic` se debe colocar `test`, en `mqttUsername` se puede colocar cualquiera, como no se colocó contraseña, `mqttPassword` se queda vacío y en `mqttPort` se coloca `1883`.
+
+![](./esp4.png)
+
+Una vez modificado el código, se debe conectar la ESP-32 a la computadora y verificar los siguientes apartados: 
+- Ir a `Herramientas -> Placa -> ESP32 Arduino` y ahí seleccionar `DOIT ESP32 DEVKITV1`. 
+- Verificar que `Upload Speed` se encuentre a 921600. 
+- En `Puerto`, se debe de seleccionar en el que está conectado el ESP-32, en caso de que no sepa cúal es, se puede conectar y desconectar para rápidamente identificar el puerto. 
+
+Una vez hechas las configuraciones, solamente queda presionar el botón de subir, el cual es un símbolo de una flecha apuntando a la derecha `->`, con lo que se compilará el archivo y se empezará a subir. En dado caso de que aparezca un mensaje de conectando en la parte inferior de la pantalla, se deberá presionar el botón de `boot` de la ESP-32 hasta que se comience a subir, para la placa usada en esta prueba no es necesario que se presione el botón. Una vez subido el programa se mostrará un mensaje como el que se muestra en la imagen. 
+
+![](./esp5.png)
+
+Una vez subido, se puede abrir un monitor serie (***Asegurarse que la velocidad está en 115200 baudios***) para ir observando los mensajes que se envían al servidor MQTT e ingresar a la dirección 192.168.1.9:1885/ui en el navegador, donde se podrán observar las mediciones que se van registrando en el ADC en una gráfica, como se muestra en la imagen.  
+
+![](./esp6.png)
+
