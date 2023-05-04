@@ -116,11 +116,10 @@ Ahora es necesario poner en funcionamiento Node-Red en segundo plano y visualiza
 node-red &
 sudo netstat -plnt
 ```
-En caso de que aparezca un mensaje diciendo que el puerto está en uso, como se muestra en la iamgen, se deberá presionar `ctrl+c`, el puerto por defecto es el 1880, pero se puede colocar otro puerto, por ejemplo, el 1885:
+En caso de que aparezca un mensaje diciendo que el puerto está en uso, como se muestra en la imagen, se deberá presionar `ctrl+c`, el puerto por defecto es el 1880, pero se puede colocar otro puerto, por ejemplo, el 1885:
 ```
 node-red -p 1885 &
 ```
-
 ![](./nodered1.png)
 
 Si el puerto no está en uso deberá de aparecer algo parecido a lo que se muestra en la imagen, además se puede observar que se conecta directamente con el servidor MQTT que está corriendo en el puerto 1883. 
@@ -129,7 +128,7 @@ Si el puerto no está en uso deberá de aparecer algo parecido a lo que se muest
 
 ## Prueba de conexión de MQTT y Node-Red
 
-Para ver el panel de Node-red, en el navegador de la computadora se debe acceder a `Nombre-IP_Host:1885`, en este caso se accedió con `192.168.1.9:1885`, lo cual nos lleva a la pantalla que se muestra en la imagen. 
+Para ver el panel de Node-red, en el navegador de la computadora se debe acceder a `Nombre-IP_Host:1885`, en este caso se accedió con `192.168.1.200:1885`, lo cual nos lleva a la pantalla que se muestra en la imagen. 
 
 ![](./nodered3.png)
 
@@ -193,7 +192,7 @@ En el repositorio se encuentra el archivo `mqtt.ino`, en el cual se conecta al s
 
 ![](./esp32pinout.png)
 
-En el código, las partes importantes a modificar son dos, la primera corresponde al nombre y contraseña de la red inalámbrica que se va a conectar la placa, lo cual se debe de colocar en `ssid` y `password`. La segunda parte a modificar son del servidor MQTT, en `mqttBrocker` se debe colocar la dirección IP de la BeagleBone (192.168.1.9 en este caso), en `topic` se debe colocar `test`, en `mqttUsername` se puede colocar cualquiera, como no se colocó contraseña, `mqttPassword` se queda vacío y en `mqttPort` se coloca `1883`.
+En el código, las partes importantes a modificar son dos, la primera corresponde al nombre y contraseña de la red inalámbrica que se va a conectar la placa, lo cual se debe de colocar en `ssid` y `password`. La segunda parte a modificar son del servidor MQTT, en `mqttBrocker` se debe colocar la dirección IP de la BeagleBone (192.168.1.200 en este caso), en `topic` se debe colocar `test`, en `mqttUsername` se puede colocar cualquiera, como no se colocó contraseña, `mqttPassword` se queda vacío y en `mqttPort` se coloca `1883`.
 
 ![](./esp4.png)
 
@@ -206,7 +205,7 @@ Una vez hechas las configuraciones, solamente queda presionar el botón de subir
 
 ![](./esp5.png)
 
-Una vez subido, se puede abrir un monitor serie (***Asegurarse que la velocidad está en 115200 baudios***) para ir observando los mensajes que se envían al servidor MQTT e ingresar a la dirección 192.168.1.9:1885/ui en el navegador, donde se podrán observar las mediciones que se van registrando en el ADC en una gráfica, como se muestra en la imagen.  
+Una vez subido, se puede abrir un monitor serie (***Asegurarse que la velocidad está en 115200 baudios***) para ir observando los mensajes que se envían al servidor MQTT e ingresar a la dirección `192.168.1.200:1885/ui` en el navegador, donde se podrán observar las mediciones que se van registrando en el ADC en una gráfica, como se muestra en la imagen.  
 
 ![](./esp6.png)
 

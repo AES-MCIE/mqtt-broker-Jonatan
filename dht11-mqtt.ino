@@ -1,21 +1,29 @@
-// Summer School 2022
-// ESP32 test code for MQTT protocol using
-// a free MQTT broker by emqx
-// Gerardo Marx
+//ESP32 + DHT11 + MQTT
+//MQTT Client
 
+//Librarys
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <stdio.h>
+#include <DHT.h>
+
+//dht pin
+#define DHTPIN 34
+//Sensor type
+#define DHTTYPE DHT11
+
+//Sensor configuration
+DHT dht(DHTPIN, DHTTYPE);
 
 // WiFi configuration
 const char *ssid = "Megcable_2.4G_F156"; // WiFi name
 const char *password = "F6D3kqGk";  // WiFi password
-int adc = 0;
+float t = 0;
 char text[20];
 WiFiClient espClient;
 
-// mqtt brocker:
-const char *mqttBrocker = "192.168.1.11";
+// mqtt broker:
+const char *mqttBrocker = "192.168.1.200";
 const char *topic = "test";
 const char *mqttUsername = "emqx";
 const char *mqttPassword = "";
@@ -24,8 +32,11 @@ PubSubClient client(espClient);
 
 
 void setup(){
+  
+  //Start sensor
+  dht.begin();
+  
   //serial communication
-  analogSetAttenuation(ADC_11db);
   Serial.begin(115200);
   WiFi.begin(ssid, password);
   while(WiFi.status() != WL_CONNECTED){
@@ -34,6 +45,7 @@ void setup(){
     Serial.println(ssid); 
   }
   Serial.println("Connection done.");
+  
   //connecting to a mqtt brocker:
   client.setServer(mqttBrocker, mqttPort);
   client.setCallback(callback);
@@ -57,14 +69,16 @@ void setup(){
 
 void loop(){
   client.loop();
-  adc = analogRead(34);
-  sprintf(text, "%d", adc);
-  client.publish(topic, text);
-     
+  //Reading Sensor
+  t = dht.readTemperature();
+  sprintf(text, "%d", t);
   
-  delay(1000);
+  //Publishing temperature measure
+  client.publish(topic, text);
+  delay(5000);
 }
 
+//Printing Messages from MQTT Broker 
 void callback(char *topic, byte *payload, unsigned int length){
   Serial.print("Message recived in topic: ");
   Serial.println(topic);
