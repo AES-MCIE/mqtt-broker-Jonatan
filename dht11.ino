@@ -1,12 +1,13 @@
 // DHT11 ESP32
-// Jonatan Medina
+// Jonatan Ali Medina Molina
+// IT Morelia
 
 // Librarys
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 
 // dht pin
-#define DHTPIN 34
+#define DHTPIN 2
 //Sensor type
 #define DHTTYPE DHT11
 

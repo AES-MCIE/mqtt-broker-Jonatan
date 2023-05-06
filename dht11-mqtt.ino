@@ -1,5 +1,7 @@
-//ESP32 + DHT11 + MQTT
-//MQTT Client
+// ESP32 + DHT11 + MQTT
+// MQTT Client
+// Jonatan Ali Medina Molina
+// IT Morelia
 
 //Librarys
 #include <WiFi.h>
@@ -8,7 +10,8 @@
 #include <DHT.h>
 
 //dht pin
-#define DHTPIN 34
+#define DHTPIN 2
+#define LED 4
 //Sensor type
 #define DHTTYPE DHT11
 
@@ -16,15 +19,24 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 // WiFi configuration
-const char *ssid = "Megcable_2.4G_F156"; // WiFi name
-const char *password = "F6D3kqGk";  // WiFi password
+//const char *ssid = "Megcable_2.4G_F156"; // WiFi name
+//const char *password = "F6D3kqGk";  // WiFi password
+const char *ssid = "Megcable_2.4G_FD48"; // WiFi name
+const char *password = "thTdXdR7";  // WiFi password
 float t = 0;
-char text[20];
+float h = 0;
+char textT[20];
+char textH[20];
+char textS[20];
+char letra[20];
+
 WiFiClient espClient;
 
 // mqtt broker:
-const char *mqttBrocker = "192.168.1.200";
-const char *topic = "test";
+const char *mqttBroker = "192.168.1.200";
+const char *topic1 = "esp32/temp";
+const char *topic2 = "esp32/hum";
+const char *topic3 = "esp32/out";
 const char *mqttUsername = "emqx";
 const char *mqttPassword = "";
 const int mqttPort = 1883;
@@ -35,7 +47,7 @@ void setup(){
   
   //Start sensor
   dht.begin();
-  
+  pinMode(LED, OUTPUT);
   //serial communication
   Serial.begin(115200);
   WiFi.begin(ssid, password);
@@ -47,7 +59,7 @@ void setup(){
   Serial.println("Connection done.");
   
   //connecting to a mqtt brocker:
-  client.setServer(mqttBrocker, mqttPort);
+  client.setServer(mqttBroker, mqttPort);
   client.setCallback(callback);
   while(!client.connected()){
     String clientID = "esp32-jonatan-";
@@ -63,29 +75,59 @@ void setup(){
     }
   }
   //once connected publish and suscribe:
-  client.publish(topic, "Hi broker I'm a ESP32 :)");
-  client.subscribe(topic);
+  client.publish(topic1, "Hi broker I'm a ESP32 :)");
+  client.subscribe(topic1);
+  client.publish(topic2, "Hi broker I'm a ESP32 :)");
+  client.subscribe(topic2);
+  client.publish(topic3, "Hi broker I'm a ESP32 :)");
+  client.subscribe(topic3);
 }
 
 void loop(){
   client.loop();
-  //Reading Sensor
+  //Temperature Measurement
   t = dht.readTemperature();
-  sprintf(text, "%d", t);
-  
+  sprintf(textT, "%d", t);
   //Publishing temperature measure
-  client.publish(topic, text);
-  delay(5000);
+  client.publish(topic1, textT);
+
+  //Humidity Measurement
+  h = dht.readHumidity();
+  sprintf(textH, "%d", h);
+  //Publishing humidity measure
+  client.publish(topic2, textH); 
+  delay(2000);
 }
 
 //Printing Messages from MQTT Broker 
 void callback(char *topic, byte *payload, unsigned int length){
+  int contador = 0;
   Serial.print("Message recived in topic: ");
   Serial.println(topic);
   Serial.print("The message is: ");
   for(int i=0;i<length; i++){
     Serial.print((char) payload[i]);
+    sprintf(letra, "%x", payload[i]);
+    if(letra == "o"){
+          contador+=1;
+    }
+    if(letra == "n"){
+          contador+=1;
+    }
+    if(letra == "f"){
+          contador+=1;
+    } 
   }
+
+  if(contador == 2){
+      digitalWrite(LED, HIGH);
+      Serial.println ("LED ON");
+    }
+  if(contador == 3){
+    digitalWrite(LED, LOW);
+    Serial.println("LED OFF");
+    }
+  contador = 0;
   Serial.println();
   Serial.println("-+-+-+End+-+-+-+");
 }

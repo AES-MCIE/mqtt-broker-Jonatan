@@ -133,9 +133,9 @@ Para ver el panel de Node-red, en el navegador de la computadora se debe acceder
 ![](/imagenes/nodered3.png)
 
 Para comprobar que Node-Red y MQTT están conectados de forma correcta, se utilizaron los siguientes nodos que se pueden encontrar en la parte izquierda del panel de Node-Red:
-- `mqtt in` que se encuentra en network.
-- `debug` que se encuentra en common. 
-- `chart` que se encuentra en dashboard. 
+- `mqtt in` que se encuentra en `network`. Permite recibir los mensajes que llegan a un tópico de MQTT.
+- `debug` que se encuentra en `common`. Sirve para poder visualizar los mensajes que llegan o salen de un nodo en específico. 
+- `chart` que se encuentra en `dashboard`. Permite graficar valores numéricos que le lleguen como mensaje. 
 
 Como se acaban de colocar, aparecerá un triángulo rojo encima de los nodos, lo que indica que no están configurados, como se muestra en la imagen. 
 
@@ -155,7 +155,7 @@ El siguiente nodo a configurar es `chart`, el cual es muy sencillo, ya que no de
 
 ![](/imagenes/nodered7.png)
 
-Luego de que todo esté configurado, la última parte es conectar los nodos, lo cual es muy sencillo, al acercar el ratón a los pequeños cuadrados que se encuentran a los lados de los nodos se iluminarán de color naranja, damos click y solamente es cuestión de arrastrar hasta el nodo al que se quiera conectar, para esta prueba, las conexiones quedaron como las que se muestran en la imagen. 
+Luego de que todo esté configurado, la última parte es conectar los nodos, lo cual es muy sencillo, al acercar el ratón a los pequeños cuadrados que se encuentran a los lados de los nodos se iluminarán de color naranja, damos click y solamente es cuestión de arrastrar hasta el nodo al que se quiera conectar, para esta prueba, las conexiones quedaron como las que se muestran en la imagen. ***Importante: No olvidar presionar `Deploy` al terminar de realizar las conexiones.***
 
 ![](/imagenes/nodered8.png)
 
@@ -196,7 +196,7 @@ En caso de que no aparezca el gestor mencionada, se deberá ingresar a `Archivo 
 
 El siguiente paso es instalar la librería `PubSubClient`, la cual servirá para la conexión con MQTT, para ello debemos de ir a `Programa -> Incluir Librería -> Administrar Bibliotecas`, en donde debemos de buscar PubSubClient e instalar la creada por `Nick O'Leary`.
 
-![](./imagenes/libreria1.png)
+![](/imagenes/libreria1.png)
 
 Otra librería a instalar es la `DHT`, ya que es la que facilita la lectura del sensor que se va utilizar, para ello, estando en `Administrar Bibliotecas`, buscamos DHT e instalamos la que se muestra en la imagen. 
 
@@ -231,20 +231,67 @@ Una vez hechas las configuraciones, solamente queda presionar el botón de subir
 
 Para visualizar las mediciones se debe ir a `Herramienta -> Monitor Serie` y ahí asegurarse de que la velocidad que se encuentra en la parte inferior se encuentre en `9600`, si todo está correcto, deben aparecer mediciones como se muestra en la imagen. 
 
-***Colocar imagen del monitor serie del sensor***
+![](/imagenes/esp32Serie.png)
 
 
-# Prueba de Node-Red, MQTT y ESP-32
+# Prueba de Node-Red, MQTT, ESP32 y DHT11
 
-En el repositorio se encuentra el archivo `dht11-mqtt.ino`, en el cual se conecta al servidor MQTT que se encuentra en la BeagleBone y le envía el valor leído por el sensor DHT11 que se encuentra conectado a la ESP32 cada 5 segundos. Las conexiones con el sensor fueron las mismas que para las usadas en el apartado de `Prueba Sensor DTH11`.
+En el repositorio se encuentra el archivo `dht11-mqtt.ino`, en el cual se conecta al servidor MQTT que se encuentra en la BeagleBone y le envía el valor de temperatura y humedad leído por el sensor DHT11 cada 2 segundos, además, si recibe una orden de `on` u `off`, enciende o apaga un LED conectado al GPIO-4. El esquemático usado se muestra en la siguiente imagen.
 
-En el código, las partes importantes a modificar son dos, la primera corresponde al nombre y contraseña de la red inalámbrica que se va a conectar la placa, lo cual se debe de colocar en `ssid` y `password`. La segunda parte a modificar son del servidor MQTT, en `mqttBrocker` se debe colocar la dirección IP de la BeagleBone (192.168.1.200 en este caso), en `topic` se debe colocar `test`, en `mqttUsername` se puede colocar cualquiera, como no se colocó contraseña, `mqttPassword` se queda vacío y en `mqttPort` se coloca `1883`.
+![](/imagenes/final-proto.png)
 
-![](/imagenes/esp4.png)
+En el código, las partes importantes a modificar son dos, la primera corresponde al nombre y contraseña de la red inalámbrica que se va a conectar la placa, lo cual se debe de colocar en `ssid` y `password`. La segunda parte a modificar son del servidor MQTT, en `mqttBroker` se debe colocar la dirección IP de la BeagleBone (192.168.1.200 en este caso), en `mqttUsername` se puede colocar cualquiera, como no se colocó contraseña`mqttPassword` se queda vacío y en `mqttPort` se coloca `1883`. En cuanto a los tópicos, se necesitan de tres para la prueba final, uno para temperatura, otro para humedad y el último para el control del LED, se le colocaron los nombres de `esp32/temp`, `esp32/hum` y `esp32/out`, respectivamente, pero se le pueden cambiar de nombre, solo es importante que en Node-Red, las entradas y salidas MQTT tengan el mismo tópico que los colocados. 
+
+![](/imagenes/final-mqttArduino.png)
+
+Pasando de nuevo a Node-Red, se requiere graficar los valores de humedad y temperatura, por lo que la primer parte es colocar los nodos que se encuentran en los siguientes apartados. 
+
+- `mqtt in` que se encuentra en `network` X2.
+- `debug` que se encuentra en `common` X2. 
+- `chart` que se encuentra en `dashboard` X2. 
+
+Los nodos quedaron conectados como se muestra en la siguiente imagen, las configuraciones son idénticas a las que se explicaron en el apartado `Prueba de conexión de MQTT y Node-Red`, solamente se debe de colocar en `Topic`: `esp32/temp` y `esp32/hum`. La configuración de los `charts` fue solamente colocar `Temperature` y `Humidity` en el apartado de `Label`, para poder identificar la gráfica de las dos variables más fácilmente. 
+
+![](/imagenes/final-charts.png)
+
+La siguiente parte fue poder controlar el LED de acuerdo a la lectura de la temperatura recibida, para eso se hizo uso de los siguientes nodos: 
+
+- `switch` que se encuentra en `function`. Permite redirigir los valores de acuerdo al mensaje de entrada que recibe y a las condicionales que se le indican. 
+- `change` que se encuentra en `function` X2. Permite enviar un mensaje(se puede configurar el tipo de mensaje)cuando recibe algo a la entrada.
+- `filter` que se encuentra en `function` X2. Permite bloquear que pase un mensaje de acuerdo a varias condicionales, por ejemplo, si no ocurre un cambio.
+- `text` que se encuentra en `dashboard`. Permite visualizar un mensaje. 
+- `mqtt out` que se encuentra en `network`. Permite publicar algo en un tópico de MQTT. 
+- `debug` que se encuentra en `common`. 
+
+La configuración de los nodos se muestra en la siguiente imagen. 
+
+![](/imagenes/final-filtro.png)
+
+La conexión de nodos resultante se muestra en la imagen siguiente, el funcionamiento es el siguiente, la temperatura que se recibe del nodo `esp32/temp` pasa al `switch`, el que manda el mensaje hacia la `On` si es mayor a 35 y hacia `Off` si es menor o igual a 35. Tanto `On` como `Off` solamente sirven para crear un mensaje (con on u off) para `filter`, que hace la función de bloquear el paso de los mensajes hasta que haya un cambio, así se evita estar enviando repetidamente alguno de los dos mensajes. Finalmente, cuando alguno de los mensajes pasa, se publica en el tópico `esp32/out` y se coloca también en el nodo de `LED`, el cual mostrará si se encuentra encendido o apagado en pantalla.   
+
+![](/imagenes/final-nodosFiltro.png)
+
+Adicionalmente se agregaron los siguientes nodos: 
+
+- `button` que se encuentra en `dashboard` X2. Un botón que se muestra en pantalla para que el usuario realice alguna acción. 
+- `mqtt out` que se encuentra en `network`.
+
+Los dos botones agregados cumplen la función de apagar y encender el LED, esto para casos en los que el usuario requiera realizar esta acción de forma manual, la configuración de los nodos y su conexión se muestra en las siguientes imágenes. 
+
+![](/imagenes/final-nodosBotones.png)
+![](/imagenes/final-botones.png)
+
+La conexión final de todos los nodos se muestra en la siguiente imagen. ***Importante: No olvidar presionar `Deploy` para aplicar los cambios.***
+
+![](/imagenes/final-nodos.png)
+
+Y al ingresar desde el navegador a `192.168.1.200:1885/ui` se debe mostrar lo que se muestra en la siguiente imagen.
+
+![](/imagenes/final-ui.png)
+
+En la siguiente imagen se muestra la conexión en físico del circuito montado en la ESP32. 
+
+Y en la siguiente imagen, se muestra el monitor serie (debe estar colocado a velocidad de 115200 baudios) del Arduino IDE y las gráficas que se van realizando conforme llegan los datos. 
 
 
-
-Una vez subido, se puede abrir un monitor serie (***Asegurarse que la velocidad está en 115200 baudios***) para ir observando los mensajes que se envían al servidor MQTT e ingresar a la dirección `192.168.1.200:1885/ui` en el navegador, donde se podrán observar las mediciones que se van registrando en el ADC en una gráfica, como se muestra en la imagen.  
-
-![](/imagenes/esp6.png)
 
