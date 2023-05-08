@@ -19,16 +19,21 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 // WiFi configuration
-//const char *ssid = "Megcable_2.4G_F156"; // WiFi name
-//const char *password = "F6D3kqGk";  // WiFi password
-const char *ssid = "Megcable_2.4G_FD48"; // WiFi name
-const char *password = "thTdXdR7";  // WiFi password
-float t = 0;
-float h = 0;
+const char *ssid = "Megcable_2.4G_F156"; // WiFi name
+const char *password = "F6D3kqGk";  // WiFi password
+//const char *ssid = "Megcable_2.4G_FD48"; // WiFi name
+//const char *password = "thTdXdR7";  // WiFi password
+//const char *ssid = "TP-Link_835A"; // WiFi name
+//const char *password = "79755689";  // WiFi password
+int t = 0;
+int h = 0;
 char textT[20];
 char textH[20];
 char textS[20];
 char letra[20];
+char O[10]="o";
+char N[10]="n";
+char F[10]="f";
 
 WiFiClient espClient;
 
@@ -107,14 +112,15 @@ void callback(char *topic, byte *payload, unsigned int length){
   Serial.print("The message is: ");
   for(int i=0;i<length; i++){
     Serial.print((char) payload[i]);
-    sprintf(letra, "%x", payload[i]);
-    if(letra == "o"){
+    sprintf(letra, "%c", payload[i]);
+    //Serial.print(letra);
+    if(letra[0] == N[0]){
           contador+=1;
     }
-    if(letra == "n"){
+    if(letra[0] == O[0]){
           contador+=1;
     }
-    if(letra == "f"){
+    if(letra[0] == F[0]){
           contador+=1;
     } 
   }

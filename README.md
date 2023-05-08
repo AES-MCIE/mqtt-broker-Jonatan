@@ -81,7 +81,6 @@ sudo systemctl restart mosquitto
 Para probar si el servicio se configuró de forma correcta, se puede descargar `MQTT X`, que es una aplicación disponible para Windows, Linux y MacOS que permite conectarse como cliente, se puede descargar de la página `https://mqttx.app` o con el siguiente comando en Linux: 
 ```
 sudo snap install mqttx
-
 ```
 Una vez instalado, en la interfaz de debe de presionar el símbolo `+` y se abrirá la pestaña que se muestra en la imagen, entonces se debe de llenar los apartados, en `Name` el nombre de la conexión, en la parte derecha de `Host` se debe colocar la IP de la BeagleBone Black, si no la sabe la puede ver en la terminal tecleando `ifconfig`, en la parte de `Port` se debe colocar el puerto en el que está corriendo el servicio, para nuestro caso es el 1883. ***Importante. Se debe de cambiar la versión de MQTT a la que se tenga instalada, para nuestro caso es la 3.1.1***
 
@@ -250,7 +249,7 @@ Pasando de nuevo a Node-Red, se requiere graficar los valores de humedad y tempe
 - `debug` que se encuentra en `common` X2. 
 - `chart` que se encuentra en `dashboard` X2. 
 
-Los nodos quedaron conectados como se muestra en la siguiente imagen, las configuraciones son idénticas a las que se explicaron en el apartado `Prueba de conexión de MQTT y Node-Red`, solamente se debe de colocar en `Topic`: `esp32/temp` y `esp32/hum`. La configuración de los `charts` fue solamente colocar `Temperature` y `Humidity` en el apartado de `Label`, para poder identificar la gráfica de las dos variables más fácilmente. 
+Los nodos quedaron conectados como se muestra en la siguiente imagen, las configuraciones son idénticas a las que se explicaron en el apartado `Prueba de conexión de MQTT y Node-Red`, solamente se debe de colocar en `Topic`: `esp32/temp` y `esp32/hum`. La configuración de los `charts` fue colocar `Temperature` y `Humidity` en el apartado de `Label`, para poder identificar la gráfica de las dos variables más fácilmente y el rango en el eje Y para que se acomode a los valores que puede arrojar el sensor durante las mediciones. 
 
 ![](/imagenes/final-charts.png)
 
@@ -258,7 +257,7 @@ La siguiente parte fue poder controlar el LED de acuerdo a la lectura de la temp
 
 - `switch` que se encuentra en `function`. Permite redirigir los valores de acuerdo al mensaje de entrada que recibe y a las condicionales que se le indican. 
 - `change` que se encuentra en `function` X2. Permite enviar un mensaje(se puede configurar el tipo de mensaje)cuando recibe algo a la entrada.
-- `filter` que se encuentra en `function` X2. Permite bloquear que pase un mensaje de acuerdo a varias condicionales, por ejemplo, si no ocurre un cambio.
+- `filter` que se encuentra en `function`. Permite bloquear que pase un mensaje de acuerdo a varias condicionales, por ejemplo, si no ocurre un cambio.
 - `text` que se encuentra en `dashboard`. Permite visualizar un mensaje. 
 - `mqtt out` que se encuentra en `network`. Permite publicar algo en un tópico de MQTT. 
 - `debug` que se encuentra en `common`. 
@@ -267,23 +266,9 @@ La configuración de los nodos se muestra en la siguiente imagen.
 
 ![](/imagenes/final-filtro.png)
 
-La conexión de nodos resultante se muestra en la imagen siguiente, el funcionamiento es el siguiente, la temperatura que se recibe del nodo `esp32/temp` pasa al `switch`, el que manda el mensaje hacia la `On` si es mayor a 35 y hacia `Off` si es menor o igual a 35. Tanto `On` como `Off` solamente sirven para crear un mensaje (con on u off) para `filter`, que hace la función de bloquear el paso de los mensajes hasta que haya un cambio, así se evita estar enviando repetidamente alguno de los dos mensajes. Finalmente, cuando alguno de los mensajes pasa, se publica en el tópico `esp32/out` y se coloca también en el nodo de `LED`, el cual mostrará si se encuentra encendido o apagado en pantalla.   
+La conexión de nodos resultante se muestra en la imagen siguiente, el funcionamiento es el siguiente, la temperatura que se recibe del nodo `esp32/temp` pasa al `switch`, el que manda el mensaje hacia la `On` si es mayor a 35 y hacia `Off` si es menor o igual a 35. Tanto `On` como `Off` solamente sirven para crear un mensaje (con on u off) para `filter`, que hace la función de bloquear el paso de los mensajes hasta que haya un cambio, así se evita estar enviando repetidamente alguno de los dos mensajes. Finalmente, cuando alguno de los mensajes pasa, se publica en el tópico `esp32/out` y se coloca también en el nodo de `LED`, el cual mostrará si se encuentra encendido o apagado en pantalla.  ***Importante: No olvidar presionar `Deploy` para aplicar los cambios.*** 
 
 ![](/imagenes/final-nodosFiltro.png)
-
-Adicionalmente se agregaron los siguientes nodos: 
-
-- `button` que se encuentra en `dashboard` X2. Un botón que se muestra en pantalla para que el usuario realice alguna acción. 
-- `mqtt out` que se encuentra en `network`.
-
-Los dos botones agregados cumplen la función de apagar y encender el LED, esto para casos en los que el usuario requiera realizar esta acción de forma manual, la configuración de los nodos y su conexión se muestra en las siguientes imágenes. 
-
-![](/imagenes/final-nodosBotones.png)
-![](/imagenes/final-botones.png)
-
-La conexión final de todos los nodos se muestra en la siguiente imagen. ***Importante: No olvidar presionar `Deploy` para aplicar los cambios.***
-
-![](/imagenes/final-nodos.png)
 
 Y al ingresar desde el navegador a `192.168.1.200:1885/ui` se debe mostrar lo que se muestra en la siguiente imagen.
 
@@ -291,7 +276,11 @@ Y al ingresar desde el navegador a `192.168.1.200:1885/ui` se debe mostrar lo qu
 
 En la siguiente imagen se muestra la conexión en físico del circuito montado en la ESP32. 
 
+![](/imagenes/prueba-fisico.jpg)
+
 Y en la siguiente imagen, se muestra el monitor serie (debe estar colocado a velocidad de 115200 baudios) del Arduino IDE y las gráficas que se van realizando conforme llegan los datos. 
+
+![](/imagenes/prueba-final.png)
 
 
 

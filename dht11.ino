@@ -1,6 +1,5 @@
 // DHT11 ESP32
-// Jonatan Ali Medina Molina
-// IT Morelia
+// Jonatan Medina
 
 // Librarys
 #include <Adafruit_Sensor.h>
