@@ -266,7 +266,7 @@ La configuración de los nodos se muestra en la siguiente imagen.
 
 ![](/imagenes/final-filtro.png)
 
-La conexión de nodos resultante se muestra en la imagen siguiente, el funcionamiento es el siguiente, la temperatura que se recibe del nodo `esp32/temp` pasa al `switch`, el que manda el mensaje hacia la `On` si es mayor a 35 y hacia `Off` si es menor o igual a 35. Tanto `On` como `Off` solamente sirven para crear un mensaje (con on u off) para `filter`, que hace la función de bloquear el paso de los mensajes hasta que haya un cambio, así se evita estar enviando repetidamente alguno de los dos mensajes. Finalmente, cuando alguno de los mensajes pasa, se publica en el tópico `esp32/out` y se coloca también en el nodo de `LED`, el cual mostrará si se encuentra encendido o apagado en pantalla.  ***Importante: No olvidar presionar `Deploy` para aplicar los cambios.*** 
+La conexión de nodos resultante se muestra en la imagen siguiente, el funcionamiento es el siguiente, la temperatura que se recibe del nodo `esp32/temp` pasa al `switch`, el que manda el mensaje hacia la `On` si es mayor a 25 y hacia `Off` si es menor o igual a 25. Tanto `On` como `Off` solamente sirven para crear un mensaje (con 'on' u 'off') para `filter`, que hace la función de bloquear el paso de los mensajes hasta que haya un cambio, así se evita estar enviando repetidamente alguno de los dos mensajes. Finalmente, cuando alguno de los mensajes pasa, se publica en el tópico `esp32/out` y se coloca también en el nodo de `LED`, el cual mostrará si se encuentra encendido o apagado en pantalla.  ***Importante: No olvidar presionar `Deploy` para aplicar los cambios.*** 
 
 ![](/imagenes/final-nodosFiltro.png)
 
